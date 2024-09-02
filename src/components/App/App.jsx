@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { fetchGallery } from '../../api/api-gallery';
 import SearchBar from '../SearchBar/SearchBar';
+import ImageGallery from '../ImageGallery/ImageGallery';
 
 function App() {
   const [images, setImages] = useState([]);
@@ -9,7 +10,8 @@ function App() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
-  // const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const handleSearch = async query => {
     setImages([]);
@@ -29,10 +31,16 @@ function App() {
     }
   };
 
-  console.log(images);
+  const handleOpenModal = selectedImage => {
+    setIsOpenModal(true);
+    setSelectedImage(selectedImage);
+    console.log('click', selectedImage);
+  };
+
   return (
     <>
       <SearchBar onSubmit={handleSearch} />
+      {images.length > 0 && <ImageGallery images={images} onClick={handleOpenModal} />}
     </>
   );
 }
