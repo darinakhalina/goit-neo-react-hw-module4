@@ -5,6 +5,7 @@ import ImageGallery from '../ImageGallery/ImageGallery';
 import Loader from '../Loader/Loader';
 import LoadeMoreButton from '../LoadMoreButton/LoadMoreButton';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import ImageModal from '../ImageModal/ImageModal';
 
 function App() {
   const [images, setImages] = useState([]);
@@ -41,7 +42,6 @@ function App() {
   const handleOpenModal = selectedImage => {
     setIsOpenModal(true);
     setSelectedImage(selectedImage);
-    console.log('click', selectedImage);
   };
 
   const handleLoadMore = async () => {
@@ -75,6 +75,11 @@ function App() {
       {!isLoading && page < totalPages && totalPages !== null && !error && (
         <LoadeMoreButton onClick={handleLoadMore} />
       )}
+      <ImageModal
+        image={selectedImage}
+        isOpen={isOpenModal}
+        onClose={() => setIsOpenModal(false)}
+      />
     </>
   );
 }
