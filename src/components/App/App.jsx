@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { fetchGallery } from '../../api/api-gallery';
 import SearchBar from '../SearchBar/SearchBar';
 import ImageGallery from '../ImageGallery/ImageGallery';
+import Loader from '../Loader/Loader';
+import LoadeMoreButton from '../LoadMoreButton/LoadMoreButton';
 
 function App() {
   const [images, setImages] = useState([]);
@@ -37,10 +39,30 @@ function App() {
     console.log('click', selectedImage);
   };
 
+  const handleLoadMore = async () => {
+    setIsLoading(true);
+    const nextPage = page + 1;
+
+    try {
+      const data = await fetchGallery(query, nextPage);
+      if (data.results.length === 0) {
+        return;
+      }
+      setImages(prevState => [...prevState, ...data.results]);
+      setPage(nextPage);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <SearchBar onSubmit={handleSearch} />
       {images.length > 0 && <ImageGallery images={images} onClick={handleOpenModal} />}
+      {isLoading && <Loader />}
+      {!isLoading && page < totalPages && <LoadeMoreButton onClick={handleLoadMore} />}
     </>
   );
 }
