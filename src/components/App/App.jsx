@@ -4,10 +4,11 @@ import SearchBar from '../SearchBar/SearchBar';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import Loader from '../Loader/Loader';
 import LoadeMoreButton from '../LoadMoreButton/LoadMoreButton';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 function App() {
   const [images, setImages] = useState([]);
-  const [totalPages, setTotalPages] = useState(-1);
+  const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
@@ -18,7 +19,7 @@ function App() {
   const handleSearch = async query => {
     setImages([]);
     setPage(1);
-    setError(false);
+    setError(null);
     setIsLoading(true);
 
     try {
@@ -28,6 +29,10 @@ function App() {
       setTotalPages(data.total_pages);
     } catch (error) {
       setError(error);
+      setPage(1);
+      setQuery('');
+      setImages([]);
+      setTotalPages(null);
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +57,10 @@ function App() {
       setPage(nextPage);
     } catch (error) {
       setError(error);
+      setPage(1);
+      setQuery('');
+      setImages([]);
+      setTotalPages(null);
     } finally {
       setIsLoading(false);
     }
@@ -61,8 +70,11 @@ function App() {
     <>
       <SearchBar onSubmit={handleSearch} />
       {images.length > 0 && <ImageGallery images={images} onClick={handleOpenModal} />}
+      {error && <ErrorMessage />}
       {isLoading && <Loader />}
-      {!isLoading && page < totalPages && <LoadeMoreButton onClick={handleLoadMore} />}
+      {!isLoading && page < totalPages && totalPages !== null && !error && (
+        <LoadeMoreButton onClick={handleLoadMore} />
+      )}
     </>
   );
 }
